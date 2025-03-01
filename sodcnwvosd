@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0.28
+    restart: always
+    environment:
+      MYSQL_DATABASE: "food"
+      MYSQL_ROOT_PASSWORD: MYSQL_ALLOW_EMPTY_PASSWORD
+    ports:
+      - 3306:3306
+    command: mysqld --port=3306 --bind-address=0.0.0.0
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+    command:
+      - sh
+      - -c
+      - node ./db.js && node ./db.js && node ./db.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
